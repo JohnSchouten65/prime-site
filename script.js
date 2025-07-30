@@ -1,50 +1,26 @@
-let rules = {};
+function verificaPrimo(numero) {
+  const mod = numero % 6;
+  const binario = numero.toString(2).padStart(3, '0');
+  const bitFinali = binario.slice(-3);
+  const codice = `mod6:${mod}|bit:${bitFinali}`;
 
-fetch('rules.json')
-  .then(response => response.json())
-  .then(data => { rules = data; })
-  .catch(err => console.error("Errore caricamento rules.json", err));
+  fetch('rules.json')
+    .then(response => response.json())
+    .then(regole => {
+      const risultato = regole[codice];
+      const output = document.getElementById('output');
+      output.innerHTML = `<h2>Risultato</h2>
+        <pre>
+Input: ${numero}
+Modulo 6: ${mod}
+Bit finale (3 bit): ${bitFinali}
+Codice: ${codice}
 
-function toBit(n) {
-  return n.toString(2).slice(-3).padStart(3, '0');
+${
+  risultato !== undefined
+    ? "✅ Il numero è probabile primo secondo la regola.\ndₙ = " + risultato
+    : "❌ Nessuna regola trovata per questo codice.\nIl numero è probabilmente composto."
 }
-
-function isPrime(n) {
-  if (n < 2) return false;
-  for (let i = 2; i * i <= n; i++) {
-    if (n % i === 0) return false;
-  }
-  return true;
-}
-
-function runEngine() {
-  const n = parseInt(document.getElementById("numberInput").value);
-  const mod6 = n % 6;
-  const bit = toBit(n);
-  const code = `mod6:${mod6}|bit:${bit}`;
-  const dn = rules[code];
-
-  let output = `Input: ${n}\n`;
-  output += `Modulo 6: ${mod6}\n`;
-  output += `Bit finale (3 bit): ${bit}\n`;
-  output += `Codice: ${code}\n`;
-
-  if (dn !== undefined) {
-    const nextPrime = n + dn;
-    output += `\ndₙ trovato: ${dn}\n`;
-    output += `Prossimo primo stimato: ${nextPrime}`;
-    output += isPrime(nextPrime)
-      ? "\n✅ Confermato: è realmente PRIMO!"
-      : "\n⚠️ Attenzione: il risultato NON è primo.";
-  } else {
-    output += `\nNessuna regola trovata per questo codice.`;
-  }
-
-  
-  output += "\n\n" + (isPrime(n)
-    ? `✅ ${n} è un numero primo confermato.`
-    : `⚠️ ${n} NON è primo secondo la verifica classica.`);
-
-  document.getElementById("output").textContent = output;
-
+        </pre>`;
+    });
 }

@@ -1,39 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Motore Binario Prime</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Controllo Numeri Primi</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <nav>
-    <ul>
-      <li><a href="#engine">Motore</a></li>
-      <li><a href="#result">Risultato</a></li>
-      <li><a href="#info">Info</a></li>
-    </ul>
-  </nav>
-
-  <main>
-    <section id="engine">
-      <h1>Motore Predittivo Binario</h1>
-      <input type="number" id="numberInput" placeholder="Inserisci un numero" />
-      <button onclick="runEngine()">Calcola</button>
-    </section>
-
-    <section id="result">
-      <h2>Risultato</h2>
-      <pre id="output"></pre>
-    </section>
-
-    <section id="info">
-      <h2>Info</h2>
-      <p>Sistema predittivo binario deterministico sviluppato da Johannes Schouten.</p>
-    </section>
-
-    <footer>Powered by Johannes Schouten</footer>
-  </main>
-
-  <script src="script.js"></script>
+    <h1>Verifica Numero Primo</h1>
+    <input type="number" id="inputNumber" placeholder="Inserisci un numero" />
+    <button onclick="verificaPrimo(parseInt(document.getElementById('inputNumber').value))">Verifica se Primo</button>
+    <div id="output"></div>
+    <script src="script.js"></script>
 </body>
 </html>
