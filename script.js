@@ -40,5 +40,11 @@ function runEngine() {
     output += `\nNessuna regola trovata per questo codice.`;
   }
 
+  
+  output += "\n\n" + (isPrime(n)
+    ? `✅ ${n} è un numero primo confermato.`
+    : `⚠️ ${n} NON è primo secondo la verifica classica.`);
+
   document.getElementById("output").textContent = output;
+
 }
