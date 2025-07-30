@@ -10,20 +10,38 @@
     <ul>
       <li><a href="#verify">Verifica</a></li>
       <li><a href="#next">Prossimo</a></li>
-      <li><a href="#">Spirale</a></li>
-      <li><a href="#">Grafico</a></li>
-      <li><a href="#">Info</a></li>
+      <li><a href="#spirale">Spirale</a></li>
+      <li><a href="#grafico">Grafico</a></li>
+      <li><a href="#info">Info</a></li>
     </ul>
   </nav>
 
   <main>
-    <h1 id="verify">Prime Number Finder</h1>
-    <input type="number" id="numberInput" placeholder="Inserisci un numero" />
-    <div class="buttons">
-      <button onclick="checkPrime()">È primo?</button>
-      <button onclick="findNextPrime()" id="next">Prossimo primo</button>
-    </div>
-    <div id="result"></div>
+    <section id="verify">
+      <h1>Prime Number Finder</h1>
+      <input type="number" id="numberInput" placeholder="Inserisci un numero" />
+      <div class="buttons">
+        <button onclick="checkPrime()">È primo?</button>
+        <button onclick="findNextPrime()">Prossimo primo</button>
+      </div>
+      <div id="result"></div>
+    </section>
+
+    <section id="spirale">
+      <h2>Spirale</h2>
+      <p>Questa sezione ospiterà in futuro una visualizzazione a spirale dei numeri primi.</p>
+    </section>
+
+    <section id="grafico">
+      <h2>Grafico</h2>
+      <p>Qui potrai vedere grafici come pₙ vs n, oppure distribuzione dei gap dₙ.</p>
+    </section>
+
+    <section id="info">
+      <h2>Info</h2>
+      <p>Creato da Johannes Schouten. Questo sito dimostra un approccio logico alla ricerca dei numeri primi.</p>
+    </section>
+
     <footer>Powered by Johannes Schouten</footer>
   </main>
 
