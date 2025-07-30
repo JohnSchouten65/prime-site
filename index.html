@@ -2,16 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Prime Number Checker</title>
+  <title>Prime Number Finder</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Prime Number Finder</h1>
-  <input type="number" id="numberInput" placeholder="Enter a number" />
-  <button onclick="checkPrime()">Is Prime?</button>
-  <button onclick="findNextPrime()">Next Prime</button>
-  <div id="result"></div>
-  <footer>Powered by Johannes Schouten</footer>
+  <nav>
+    <ul>
+      <li><a href="#verify">Verifica</a></li>
+      <li><a href="#next">Prossimo</a></li>
+      <li><a href="#">Spirale</a></li>
+      <li><a href="#">Grafico</a></li>
+      <li><a href="#">Info</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1 id="verify">Prime Number Finder</h1>
+    <input type="number" id="numberInput" placeholder="Inserisci un numero" />
+    <div class="buttons">
+      <button onclick="checkPrime()">È primo?</button>
+      <button onclick="findNextPrime()" id="next">Prossimo primo</button>
+    </div>
+    <div id="result"></div>
+    <footer>Powered by Johannes Schouten</footer>
+  </main>
+
   <script src="script.js"></script>
 </body>
 </html>

@@ -10,7 +10,7 @@ function isPrime(num) {
 
 function checkPrime() {
   const num = parseInt(document.getElementById("numberInput").value);
-  const result = isPrime(num) ? num + " is PRIME" : num + " is NOT prime";
+  const result = isPrime(num) ? num + " è PRIMO" : num + " NON è primo";
   document.getElementById("result").textContent = result;
 }
 
@@ -19,5 +19,5 @@ function findNextPrime() {
   do {
     num++;
   } while (!isPrime(num));
-  document.getElementById("result").textContent = "Next prime: " + num;
+  document.getElementById("result").textContent = "Prossimo primo: " + num;
 }
