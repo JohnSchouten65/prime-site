@@ -9,6 +9,14 @@ function toBit(n) {
   return n.toString(2).slice(-3).padStart(3, '0');
 }
 
+function isPrime(n) {
+  if (n < 2) return false;
+  for (let i = 2; i * i <= n; i++) {
+    if (n % i === 0) return false;
+  }
+  return true;
+}
+
 function runEngine() {
   const n = parseInt(document.getElementById("numberInput").value);
   const mod6 = n % 6;
@@ -25,6 +33,9 @@ function runEngine() {
     const nextPrime = n + dn;
     output += `\ndₙ trovato: ${dn}\n`;
     output += `Prossimo primo stimato: ${nextPrime}`;
+    output += isPrime(nextPrime)
+      ? "\n✅ Confermato: è realmente PRIMO!"
+      : "\n⚠️ Attenzione: il risultato NON è primo.";
   } else {
     output += `\nNessuna regola trovata per questo codice.`;
   }
