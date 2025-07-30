@@ -53,3 +53,10 @@ footer {
   font-size: 0.9em;
   color: #888;
 }
+
+
+section {
+  padding: 100px 20px;
+  min-height: 300px;
+  border-top: 1px solid #ddd;
+}
