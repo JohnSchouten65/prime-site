@@ -1,0 +1,26 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 2em;
+  background-color: #f0f0f0;
+}
+input {
+  padding: 0.5em;
+  font-size: 1em;
+  width: 200px;
+}
+button {
+  padding: 0.5em 1em;
+  margin: 0.5em;
+  font-size: 1em;
+}
+#result {
+  margin-top: 1em;
+  font-size: 1.2em;
+  color: #333;
+}
+footer {
+  margin-top: 2em;
+  font-size: 0.9em;
+  color: #666;
+}
