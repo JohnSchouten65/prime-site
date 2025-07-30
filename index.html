@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Prime Number Finder</title>
+  <title>Prime Bit Engine</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,28 +18,29 @@
 
   <main>
     <section id="verify">
-      <h1>Prime Number Finder</h1>
+      <h1>Prime Bit Engine</h1>
       <input type="number" id="numberInput" placeholder="Inserisci un numero" />
       <div class="buttons">
-        <button onclick="checkPrime()">È primo?</button>
-        <button onclick="findNextPrime()">Prossimo primo</button>
+        <button onclick="showBitPattern()">Mostra pattern binario</button>
+        <button onclick="checkPrimeBit()">È primo?</button>
+        <button onclick="findNextPrimeBit()">Prossimo primo</button>
       </div>
       <div id="result"></div>
     </section>
 
     <section id="spirale">
       <h2>Spirale</h2>
-      <p>Questa sezione ospiterà in futuro una visualizzazione a spirale dei numeri primi.</p>
+      <p>Visualizzazione futura della spirale binaria dei numeri primi.</p>
     </section>
 
     <section id="grafico">
       <h2>Grafico</h2>
-      <p>Qui potrai vedere grafici come pₙ vs n, oppure distribuzione dei gap dₙ.</p>
+      <p>Grafici futuri: pₙ vs n, distribuzione gap dₙ, bitmask heatmap.</p>
     </section>
 
     <section id="info">
       <h2>Info</h2>
-      <p>Creato da Johannes Schouten. Questo sito dimostra un approccio logico alla ricerca dei numeri primi.</p>
+      <p>Creato da Johannes Schouten. Questo sito è alimentato da un motore binario deterministico.</p>
     </section>
 
     <footer>Powered by Johannes Schouten</footer>
