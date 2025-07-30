@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Binary Prime Engine</title>
   <style>
     body {
@@ -72,89 +73,97 @@
       background: #fff;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 </head>
 <body>
-<!-- resto del documento verrà aggiunto dopo -->
+  <header>Binary Prime Engine</header>
+  <div class="container">
+    <input type="number" id="inputNumber" placeholder="Inserisci un numero">
+    <div class="menu">
+      <button onclick="checkPrime()">Verifica se primo</button>
+      <button onclick="calculateGap()">Gap dₙ</button>
+      <button onclick="findTwins()">Primi gemelli</button>
+      <button onclick="findDoubleTwins()">Doppi gemelli</button>
+      <button onclick="factorize()">Scomposizione</button>
+      <button onclick="generatePrimes()">Genera intervallo</button>
+      <button onclick="drawSpiral2D()">Spirale 2D</button>
+      <button onclick="drawSpiral3D()">Spirale 3D</button>
+    </div>
+    <div class="result" id="result"></div>
+    <canvas id="spiralCanvas" width="600" height="600"></canvas>
+    <div id="spiral3dContainer" style="width:100%; height:500px; margin-top:30px;"></div>
+  </div>
 
-  <script type="module">
-    import * as THREE from 'https://cdn.skypack.dev/three';
-
+  <script>
     function isPrime(n) {
       if (n < 2) return false;
-      for (let i = 2; i * i <= n; i++) {
-        if (n % i === 0) return false;
-      }
+      for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
       return true;
     }
 
-    window.checkPrime = function () {
+    function checkPrime() {
       const n = parseInt(document.getElementById("inputNumber").value);
       const r = document.getElementById("result");
       if (isNaN(n)) return r.innerText = "Inserisci un numero valido.";
       r.innerText = isPrime(n) ? `${n} è un numero primo ✅` : `${n} non è primo ❌`;
-    };
+    }
 
-    window.calculateGap = function () {
+    function calculateGap() {
       const n = parseInt(document.getElementById("inputNumber").value);
       const r = document.getElementById("result");
       if (!isPrime(n)) return r.innerText = `${n} non è primo`;
       let next = n + 1;
       while (!isPrime(next)) next++;
       r.innerText = `Gap dₙ dopo ${n}: ${next - n}`;
-    };
+    }
 
-    window.findTwins = function () {
-      const da = parseInt(prompt("Da (incluso):"));
-      const a = parseInt(prompt("A (incluso):"));
-      const r = document.getElementById("result");
-      if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Intervallo non valido.";
+    function findTwins() {
       const twins = [];
-      let last = da - 1;
-      for (let n = da; n <= a; n++) {
+      let last = 2;
+      for (let n = 3; n < 1000; n++) {
         if (isPrime(n)) {
           if (n - last === 2) twins.push(`(${last}, ${n})`);
           last = n;
         }
       }
-      r.innerText = `Primi gemelli tra ${da} e ${a}:
+      document.getElementById("result").innerText = `Primi gemelli:
 ` + twins.join(", ");
-    };
+    }
 
-    window.findDoubleTwins = function () {
-      const da = parseInt(prompt("Da (incluso):"));
-      const a = parseInt(prompt("A (incluso):"));
-      const r = document.getElementById("result");
-      if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Intervallo non valido.";
+    function findDoubleTwins() {
       const doubles = [];
-      let last = da - 1;
-      for (let n = da; n <= a; n++) {
+      let last = 2;
+      for (let n = 3; n < 1000; n++) {
         if (isPrime(n)) {
           if (n - last === 4) doubles.push(`(${last}, ${n})`);
           last = n;
         }
       }
-      r.innerText = `Doppi gemelli (p, p+4) tra ${da} e ${a}:
+      document.getElementById("result").innerText = `Doppi gemelli (p, p+4):
 ` + doubles.join(", ");
-    };
+    }
 
-    window.factorize = function () {
+    function factorize() {
       let n = parseInt(document.getElementById("inputNumber").value);
       const r = document.getElementById("result");
       if (isNaN(n) || n < 2) return r.innerText = "Numero non valido.";
       const factors = [];
       let d = 2;
-      while (n > 1 && d <= n) {
-        if (n % d === 0) {
+      while (n > 1) {
+        while (n % d === 0) {
           factors.push(d);
-          n = Math.floor(n / d);
-        } else {
-          d++;
+          n /= d;
+        }
+        d++;
+        if (d * d > n && n > 1) {
+          factors.push(n);
+          break;
         }
       }
       r.innerText = `Fattori primi: ` + factors.join(" × ");
-    };
+    }
 
-    window.generatePrimes = function () {
+    function generatePrimes() {
       const da = parseInt(prompt("Da (incluso):"));
       const a = parseInt(prompt("A (incluso):"));
       const r = document.getElementById("result");
@@ -163,9 +172,31 @@
       for (let i = da; i <= a; i++) if (isPrime(i)) list.push(i);
       r.innerText = `Primi tra ${da} e ${a}:
 ` + list.join(", ");
-    };
+    }
 
-    window.drawSpiral3D = function () {
+    function drawSpiral2D() {
+      const canvas = document.getElementById("spiralCanvas");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      let angle = 0;
+      let radius = 0;
+      ctx.fillStyle = "#00d8ff";
+      for (let n = 2; n < 1000; n++) {
+        if (isPrime(n)) {
+          const x = centerX + radius * Math.cos(angle);
+          const y = centerY + radius * Math.sin(angle);
+          ctx.beginPath();
+          ctx.arc(x, y, 3, 0, 2 * Math.PI);
+          ctx.fill();
+        }
+        radius += 0.5;
+        angle += 0.2;
+      }
+    }
+
+    function drawSpiral3D() {
       const container = document.getElementById("spiral3dContainer");
       container.innerHTML = "";
       const scene = new THREE.Scene();
@@ -209,50 +240,8 @@
         scene.rotation.x += 0.001;
         renderer.render(scene, camera);
       };
-
       animate();
-    };
-
-    window.drawSpiral2D = function () {
-      const canvas = document.getElementById("spiralCanvas");
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      let angle = 0;
-      let radius = 0;
-
-      ctx.fillStyle = "#00d8ff";
-
-      for (let n = 2; n < 1000; n++) {
-        if (isPrime(n)) {
-          const x = centerX + radius * Math.cos(angle);
-          const y = centerY + radius * Math.sin(angle);
-          ctx.beginPath();
-          ctx.arc(x, y, 3, 0, 2 * Math.PI);
-          ctx.fill();
-        }
-        radius += 0.5;
-        angle += 0.2;
-      }
-    };
+    }
   </script>
-  <header>Binary Prime Engine</header>
-  <div class="container">
-    <input type="number" id="inputNumber" placeholder="Inserisci un numero">
-    <div class="menu">
-      <button onclick="checkPrime()">Verifica se primo</button>
-      <button onclick="calculateGap()">Gap dₙ</button>
-      <button onclick="findTwins()">Primi gemelli</button>
-      <button onclick="findDoubleTwins()">Doppi gemelli</button>
-      <button onclick="factorize()">Scomposizione</button>
-      <button onclick="generatePrimes()">Genera intervallo</button>
-      <button onclick="drawSpiral2D()">Spirale 2D</button>
-      <button onclick="drawSpiral3D()">Spirale 3D</button>
-    </div>
-    <div class="result" id="result"></div>
-    <canvas id="spiralCanvas" width="600" height="600"></canvas>
-    <div id="spiral3dContainer" style="width:100%; height:500px; margin-top:30px;"></div>
-  </div>
 </body>
 </html>
