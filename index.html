@@ -118,14 +118,20 @@
     }
 
     function findTwins() {
+      const da = parseInt(prompt("Da (incluso):"));
+      const a = parseInt(prompt("A (incluso):"));
+      const r = document.getElementById("result");
+      if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Intervallo non valido.";
       const twins = [];
-      let last = 2;
-      for (let n = 3; n < 1000; n++) {
+      let last = null;
+      for (let n = da; n <= a; n++) {
         if (isPrime(n)) {
-          if (n - last === 2) twins.push(`(${last}, ${n})`);
+          if (last !== null && n - last === 2) twins.push(`(${last}, ${n})`);
           last = n;
         }
       }
+      r.innerText = `Primi gemelli tra ${da} e ${a}:\n` + (twins.length ? twins.join(", ") : "Nessuna coppia trovata.");
+    }
       document.getElementById("result").innerText = `Primi gemelli:
 ` + twins.join(", ");
     }
