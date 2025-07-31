@@ -232,20 +232,19 @@ function primeIndex() {
   const r = document.getElementById("result");
   if (!/^\d+$/.test(val) || !Number.isFinite(n) || n < 2 || n > Number.MAX_SAFE_INTEGER)
     return r.innerText = "Inserisci un numero intero valido (≤ 9007199254740991).";
+  // Gestione piccoli primi
+  for (let i = 0; i < smallPrimes.length; i++) {
+    if (n === smallPrimes[i]) {
+      return r.innerText = `${n} è il numero primo n=${i + 1} nella sequenza.`;
+    }
+  }
   if (!isPrimeBit(n)) return r.innerText = `${n} non è un numero primo secondo la formula.`;
-
-  // Conta i "primi" fino a n
-  let count = 0;
-  // Conta i piccoli primi se sono <= n
-  for (let p of smallPrimes) {
-    if (p < n) count++;
-    if (p === n) return r.innerText = `${n} è il primo numero primo n=${count + 1} nella sequenza.`;
-  }
-  // Conta i "primi" secondo isPrimeBit da 8 a n
-  for (let i = 8; i <= n; i++) {
+  // Conta i piccoli primi nell'intervallo
+  let count = smallPrimes.length;
+  for (let i = 8; i < n; i++) {
     if (isPrimeBit(i)) count++;
-    if (i === n) return r.innerText = `${n} è il numero primo n=${count + smallPrimes.filter(p => p < 8).length} nella sequenza.`;
   }
+  r.innerText = `${n} è il numero primo n=${count + 1} nella sequenza.`;
 }
 
 
