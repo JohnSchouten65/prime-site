@@ -103,19 +103,22 @@
   </div>
 
   <script>
+const primeRules = {
+  primorial: 210,
+  moduloDivisors: [2, 3, 5, 7],
+  binaryPatterns: ['10', '11', '100', '101', '111']
+};
+
 function isPrimeBit(n) {
-  if (n === 2 || n === 3 || n === 5 || n === 7) return true;
   if (n < 2) return false;
-  const Pk = 210;
+  const Pk = primeRules.primorial;
   const r = n % Pk;
-  if (r % 2 === 0 || r % 3 === 0 || r % 5 === 0 || r % 7 === 0) return false;
-  for (let p of [11, 13, 17, 19]) {
-    if (n % p === 0) return false;
+  for (let d of primeRules.moduloDivisors) {
+    if (r % d === 0) return false;
   }
   const binStr = n.toString(2);
-  const B = ['10', '11', '100', '101', '111'];
   let binOk = false;
-  for (let b of B) {
+  for (let b of primeRules.binaryPatterns) {
     if (binStr.includes(b)) {
       binOk = true;
       break;
