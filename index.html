@@ -101,91 +101,105 @@
   </div>
 
   <script>
-    function isPrime(n) {
-      if (n < 2) return false;
-      for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
-      return true;
+function isPrimeBit(n) {
+  if (n === 2 || n === 3 || n === 5 || n === 7) return true;
+  if (n < 2) return false;
+  const Pk = 210;
+  const r = n % Pk;
+  if (r % 2 === 0 || r % 3 === 0 || r % 5 === 0 || r % 7 === 0) return false;
+  for (let p of [11, 13, 17, 19]) {
+    if (n % p === 0) return false;
+  }
+  const binStr = n.toString(2);
+  const B = ['10', '11', '100', '101', '111'];
+  let binOk = false;
+  for (let b of B) {
+    if (binStr.includes(b)) {
+      binOk = true;
+      break;
     }
+  }
+  if (!binOk) return false;
+  return true;
+}
 
-    function checkPrime() {
-      const n = parseInt(document.getElementById("inputNumber").value);
-      const r = document.getElementById("result");
-      if (isNaN(n)) return r.innerText = "Inserisci un numero valido.";
-      r.innerText = isPrime(n) ? `${n} è un numero primo ✅` : `${n} non è primo ❌`;
+function checkPrime() {
+  const n = parseInt(document.getElementById("inputNumber").value);
+  const r = document.getElementById("result");
+  if (isNaN(n)) return r.innerText = "Inserisci un numero valido.";
+  r.innerText = isPrimeBit(n) ? `${n} è un numero primo ✅` : `${n} non è primo ❌`;
+}
+
+function calculateGap() {
+  const n = parseInt(document.getElementById("inputNumber").value);
+  const r = document.getElementById("result");
+  if (!isPrimeBit(n)) return r.innerText = `${n} non è primo`;
+  let next = n + 1;
+  while (!isPrimeBit(next)) next++;
+  r.innerText = `Gap dₙ dopo ${n}: ${next - n}`;
+}
+
+function findTwins() {
+  const da = parseInt(prompt("Da (incluso):"));
+  const a = parseInt(prompt("A (incluso):"));
+  const r = document.getElementById("result");
+  if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Intervallo non valido.";
+  if (a - da > 10000) return r.innerText = "Intervallo troppo grande (max 10.000 numeri).";
+  const twins = [];
+  let last = null;
+  for (let n = da; n <= a; n++) {
+    if (isPrimeBit(n)) {
+      if (last !== null && n - last === 2) twins.push(`(${last}, ${n})`);
+      last = n;
     }
+  }
+  r.innerText = `Primi gemelli tra ${da} e ${a}:\n` + (twins.length ? twins.join(", ") : "Nessuna coppia trovata.");
+}
 
-    function calculateGap() {
-      const n = parseInt(document.getElementById("inputNumber").value);
-      const r = document.getElementById("result");
-      if (!isPrime(n)) return r.innerText = `${n} non è primo`;
-      let next = n + 1;
-      while (!isPrime(next)) next++;
-      r.innerText = `Gap dₙ dopo ${n}: ${next - n}`;
+function findDoubleTwins() {
+  const doubles = [];
+  let last = 2;
+  for (let n = 3; n < 1000; n++) {
+    if (isPrimeBit(n)) {
+      if (n - last === 4) doubles.push(`(${last}, ${n})`);
+      last = n;
     }
+  }
+  document.getElementById("result").innerText = `Doppi gemelli (p, p+4):\n` + doubles.join(", ");
+}
 
-    function findTwins() {
-      const da = parseInt(prompt("Da (incluso):"));
-      const a = parseInt(prompt("A (incluso):"));
-      const r = document.getElementById("result");
-      if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Intervallo non valido.";
-      if (a - da > 10000) return r.innerText = "Intervallo troppo grande (max 10.000 numeri).";
-      const twins = [];
-      let last = null;
-      for (let n = da; n <= a; n++) {
-        if (isPrime(n)) {
-          if (last !== null && n - last === 2) twins.push(`(${last}, ${n})`);
-          last = n;
-        }
-      }
-      r.innerText = `Primi gemelli tra ${da} e ${a}:\n` + (twins.length ? twins.join(", ") : "Nessuna coppia trovata.");
+function factorize() {
+  let n = parseInt(document.getElementById("inputNumber").value);
+  const r = document.getElementById("result");
+  if (isNaN(n) || n < 2) return r.innerText = "Numero non valido.";
+  const factors = [];
+  let d = 2;
+  while (n > 1) {
+    while (n % d === 0) {
+      factors.push(d);
+      n /= d;
     }
-      
-
-    function findDoubleTwins() {
-      const doubles = [];
-      let last = 2;
-      for (let n = 3; n < 1000; n++) {
-        if (isPrime(n)) {
-          if (n - last === 4) doubles.push(`(${last}, ${n})`);
-          last = n;
-        }
-      }
-      document.getElementById("result").innerText = `Doppi gemelli (p, p+4):
-` + doubles.join(", ");
+    d++;
+    if (d * d > n && n > 1) {
+      factors.push(n);
+      break;
     }
+  }
+  r.innerText = `Fattori primi: ` + factors.join(" × ");
+}
 
-    function factorize() {
-      let n = parseInt(document.getElementById("inputNumber").value);
-      const r = document.getElementById("result");
-      if (isNaN(n) || n < 2) return r.innerText = "Numero non valido.";
-      const factors = [];
-      let d = 2;
-      while (n > 1) {
-        while (n % d === 0) {
-          factors.push(d);
-          n /= d;
-        }
-        d++;
-        if (d * d > n && n > 1) {
-          factors.push(n);
-          break;
-        }
-      }
-      r.innerText = `Fattori primi: ` + factors.join(" × ");
-    }
+function generatePrimes() {
+  const da = parseInt(prompt("Da (incluso):"));
+  const a = parseInt(prompt("A (incluso):"));
+  const r = document.getElementById("result");
+  if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Intervallo non valido.";
+  if (a - da > 10000) return r.innerText = "Intervallo troppo grande (max 10.000 numeri).";
+  const list = [];
+  for (let i = da; i <= a; i++) if (isPrimeBit(i)) list.push(i);
+  r.innerText = `Primi tra ${da} e ${a}:\n` + list.join(", ");
+}
 
-    function generatePrimes() {
-      const da = parseInt(prompt("Da (incluso):"));
-      const a = parseInt(prompt("A (incluso):"));
-      const r = document.getElementById("result");
-      if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Intervallo non valido.";
-      if (a - da > 10000) return r.innerText = "Intervallo troppo grande (max 10.000 numeri).";
-      const list = [];
-      for (let i = da; i <= a; i++) if (isPrime(i)) list.push(i);
-      r.innerText = `Primi tra ${da} e ${a}:\n` + list.join(", ");
-    }
-
-     function drawSpiral2D() {
+function drawSpiral2D() {
   const canvas = document.getElementById("spiralCanvas");
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -197,7 +211,6 @@
     return;
   }
 
-  // Parametri grafici
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
   const scale = 45;
@@ -208,7 +221,6 @@
   const title = "Spirale Logaritmica dei Numeri Primi";
   const subtitle = `Intervallo: ${da} - ${a}`;
 
-  // Griglia
   ctx.save();
   ctx.strokeStyle = gridColor;
   ctx.lineWidth = 1;
@@ -224,23 +236,19 @@
   }
   ctx.restore();
 
-  // Assi cartesiani
   ctx.save();
   ctx.strokeStyle = axisColor;
   ctx.lineWidth = 2;
-  // X
   ctx.beginPath();
   ctx.moveTo(0, centerY);
   ctx.lineTo(canvas.width, centerY);
   ctx.stroke();
-  // Y
   ctx.beginPath();
   ctx.moveTo(centerX, 0);
   ctx.lineTo(centerX, canvas.height);
   ctx.stroke();
   ctx.restore();
 
-  // Titolo
   ctx.save();
   ctx.font = "bold 22px Segoe UI";
   ctx.fillStyle = "#222";
@@ -250,11 +258,10 @@
   ctx.fillText(subtitle, centerX, 65);
   ctx.restore();
 
-  // Punti primi sulla spirale logaritmica
   ctx.save();
   ctx.fillStyle = primeColor;
   for (let n = da; n <= a; n++) {
-    if (isPrime(n)) {
+    if (isPrimeBit(n)) {
       const r = Math.log(n) * scale;
       const theta = n * 0.25;
       const x = centerX + r * Math.cos(theta);
@@ -266,59 +273,59 @@
   }
   ctx.restore();
 
-  // Legenda
   ctx.save();
   ctx.font = "15px Segoe UI";
   ctx.fillStyle = primeColor;
   ctx.fillText("● Numeri primi", centerX + 180, 90);
   ctx.restore();
 }
-    function drawSpiral3D() {
-      const container = document.getElementById("spiral3dContainer");
-      container.innerHTML = "";
-      const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0xf0f0f0);
-      const camera = new THREE.PerspectiveCamera(75, 1.8, 0.1, 1000);
-      camera.position.z = 120;
-      camera.position.y = 40;
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
-      const width = container.offsetWidth;
-      const height = 500;
-      renderer.setSize(width, height);
-      container.appendChild(renderer.domElement);
+function drawSpiral3D() {
+  const container = document.getElementById("spiral3dContainer");
+  container.innerHTML = "";
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xf0f0f0);
+  const camera = new THREE.PerspectiveCamera(75, 1.8, 0.1, 1000);
+  camera.position.z = 120;
+  camera.position.y = 40;
 
-      const geometry = new THREE.SphereGeometry(0.5, 12, 12);
-      const material = new THREE.MeshBasicMaterial({ color: 0x000000 });
-      let angle = 0;
-      let radius = 1;
-      let heightStep = 0.6;
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  const width = container.offsetWidth;
+  const height = 500;
+  renderer.setSize(width, height);
+  container.appendChild(renderer.domElement);
 
-      for (let n = 2; n < 1000; n++) {
-        if (isPrime(n)) {
-          const sphere = new THREE.Mesh(geometry, material);
-          const x = radius * Math.cos(angle);
-          const y = radius * Math.sin(angle);
-          const z = n * heightStep * 0.1;
-          sphere.position.set(x, y, z);
-          scene.add(sphere);
-        }
-        angle += 0.2;
-        radius += 0.02;
-      }
+  const geometry = new THREE.SphereGeometry(0.5, 12, 12);
+  const material = new THREE.MeshBasicMaterial({ color: 0x000000 });
+  let angle = 0;
+  let radius = 1;
+  let heightStep = 0.6;
 
-      const light = new THREE.PointLight(0xffffff, 1);
-      light.position.set(50, 50, 100);
-      scene.add(light);
-
-      const animate = function () {
-        requestAnimationFrame(animate);
-        scene.rotation.z += 0.001;
-        scene.rotation.x += 0.001;
-        renderer.render(scene, camera);
-      };
-      animate();
+  for (let n = 2; n < 1000; n++) {
+    if (isPrimeBit(n)) {
+      const sphere = new THREE.Mesh(geometry, material);
+      const x = radius * Math.cos(angle);
+      const y = radius * Math.sin(angle);
+      const z = n * heightStep * 0.1;
+      sphere.position.set(x, y, z);
+      scene.add(sphere);
     }
-  </script>
+    angle += 0.2;
+    radius += 0.02;
+  }
+
+  const light = new THREE.PointLight(0xffffff, 1);
+  light.position.set(50, 50, 100);
+  scene.add(light);
+
+  const animate = function () {
+    requestAnimationFrame(animate);
+    scene.rotation.z += 0.001;
+    scene.rotation.x += 0.001;
+    renderer.render(scene, camera);
+  };
+  animate();
+}
+</script>
 </body>
 </html>
