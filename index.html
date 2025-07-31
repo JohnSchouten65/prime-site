@@ -210,41 +210,32 @@ function findDoubleTwins() {
   const r = document.getElementById("result");
   if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Intervallo non valido.";
   if (a - da > 10000) return r.innerText = "Intervallo troppo grande (max 10.000 numeri).";
-  const doubles = [];
-  // Doppi gemelli tra piccoli primi
-  for (let i = 0; i < smallPrimes.length - 1; i++) {
-    const p1 = smallPrimes[i], p2 = smallPrimes[i + 1];
-    if (p1 >= da && p2 <= a && p2 - p1 === 4) doubles.push(`(${p1}, ${p2})`);
+
+  // Crea una lista di tutti i "primi" nell'intervallo (inclusi i piccoli primi)
+  const primes = [];
+  for (let p of smallPrimes) {
+    if (p >= da && p <= a) primes.push(p);
   }
-  // Doppi gemelli tra altri primi
-  let last = null;
   for (let n = Math.max(da, 8); n <= a; n++) {
-    if (isPrimeBit(n)) {
-      if (last !== null && n - last === 4) doubles.push(`(${last}, ${n})`);
-      last = n;
+    if (isPrimeBit(n)) primes.push(n);
+  }
+  primes.sort((a, b) => a - b);
+
+  // Trova tutti i gruppi consecutivi distanti 4
+  const groups = [];
+  for (let i = 0; i < primes.length - 1; i++) {
+    if (primes[i + 1] - primes[i] === 4) {
+      // Cerca se c'è una terna (p, p+2, p+4)
+      if (i > 0 && primes[i] - primes[i - 1] === 2) {
+        groups.push(`(${primes[i - 1]}, ${primes[i]}, ${primes[i + 1]})`);
+      } else {
+        groups.push(`(${primes[i]}, ${primes[i + 1]})`);
+      }
     }
   }
-  r.innerText = `Doppi gemelli (p, p+4) tra ${da} e ${a}:\n` + (doubles.length ? doubles.join(", ") : "Nessuna coppia trovata.");
-}
-function primeIndex() {
-  const val = document.getElementById("inputNumber").value.trim();
-  const n = Number(val);
-  const r = document.getElementById("result");
-  if (!/^\d+$/.test(val) || !Number.isFinite(n) || n < 2 || n > Number.MAX_SAFE_INTEGER)
-    return r.innerText = "Inserisci un numero intero valido (≤ 9007199254740991).";
-  // Gestione piccoli primi
-  for (let i = 0; i < smallPrimes.length; i++) {
-    if (n === smallPrimes[i]) {
-      return r.innerText = `${n} è il numero primo n=${i + 1} nella sequenza.`;
-    }
-  }
-  if (!isPrimeBit(n)) return r.innerText = `${n} non è un numero primo secondo la formula.`;
-  // Conta i piccoli primi nell'intervallo
-  let count = smallPrimes.length;
-  for (let i = 8; i < n; i++) {
-    if (isPrimeBit(i)) count++;
-  }
-  r.innerText = `${n} è il numero primo n=${count + 1} nella sequenza.`;
+
+  r.innerText = `Gruppi di doppi gemelli (distanza 4) tra ${da} e ${a}:\n` +
+    (groups.length ? groups.join(", ") : "Nessun gruppo trovato.");
 }
 
 
