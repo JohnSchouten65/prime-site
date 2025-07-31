@@ -183,8 +183,14 @@ function findTwins() {
   if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Intervallo non valido.";
   if (a - da > 10000) return r.innerText = "Intervallo troppo grande (max 10.000 numeri).";
   const twins = [];
+  // Gemelli tra piccoli primi
+  for (let i = 0; i < smallPrimes.length - 1; i++) {
+    const p1 = smallPrimes[i], p2 = smallPrimes[i + 1];
+    if (p1 >= da && p2 <= a && p2 - p1 === 2) twins.push(`(${p1}, ${p2})`);
+  }
+  // Gemelli tra altri primi
   let last = null;
-  for (let n = da; n <= a; n++) {
+  for (let n = Math.max(da, 8); n <= a; n++) {
     if (isPrimeBit(n)) {
       if (last !== null && n - last === 2) twins.push(`(${last}, ${n})`);
       last = n;
@@ -194,15 +200,26 @@ function findTwins() {
 }
 
 function findDoubleTwins() {
+  const da = parseInt(prompt("Da (incluso):", "2"));
+  const a = parseInt(prompt("A (incluso):", "1000"));
+  const r = document.getElementById("result");
+  if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Intervallo non valido.";
+  if (a - da > 10000) return r.innerText = "Intervallo troppo grande (max 10.000 numeri).";
   const doubles = [];
-  let last = 2;
-  for (let n = 3; n < 1000; n++) {
+  // Doppi gemelli tra piccoli primi
+  for (let i = 0; i < smallPrimes.length - 1; i++) {
+    const p1 = smallPrimes[i], p2 = smallPrimes[i + 1];
+    if (p1 >= da && p2 <= a && p2 - p1 === 4) doubles.push(`(${p1}, ${p2})`);
+  }
+  // Doppi gemelli tra altri primi
+  let last = null;
+  for (let n = Math.max(da, 8); n <= a; n++) {
     if (isPrimeBit(n)) {
-      if (n - last === 4) doubles.push(`(${last}, ${n})`);
+      if (last !== null && n - last === 4) doubles.push(`(${last}, ${n})`);
       last = n;
     }
   }
-  document.getElementById("result").innerText = `Doppi gemelli (p, p+4):\n` + doubles.join(", ");
+  r.innerText = `Doppi gemelli (p, p+4) tra ${da} e ${a}:\n` + (doubles.length ? doubles.join(", ") : "Nessuna coppia trovata.");
 }
 
 function factorize() {
