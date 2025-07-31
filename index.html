@@ -86,7 +86,6 @@
       <button onclick="findDoubleTwins()">Doppi gemelli</button>
       <button onclick="factorize()">Scomposizione</button>
       <button onclick="generatePrimes()">Genera intervallo</button>
-      <button onclick="drawSpiral2D()">Spirale 2D</button>
       <button onclick="drawSpiral3D()">Spirale 3D</button>
     </div>
     <div class="result" id="result"></div>
@@ -216,6 +215,7 @@
           ctx.fill();
         }
       }
+    } // <--- AGGIUN
 
     function drawSpiral3D() {
       const container = document.getElementById("spiral3dContainer");
