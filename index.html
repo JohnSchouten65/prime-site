@@ -129,9 +129,13 @@ function isPrimeBit(n) {
 }
 
 function checkPrime() {
-  const n = parseInt(document.getElementById("inputNumber").value);
+  const val = document.getElementById("inputNumber").value.trim();
+  // Usa Number invece di parseInt per numeri grandi
+  const n = Number(val);
   const r = document.getElementById("result");
-  if (isNaN(n)) return r.innerText = "Inserisci un numero valido.";
+  // Controlla che sia un intero valido e non troppo grande
+  if (!/^\d+$/.test(val) || !Number.isFinite(n) || n < 2 || n > Number.MAX_SAFE_INTEGER)
+    return r.innerText = "Inserisci un numero intero valido (≤ 9007199254740991).";
   r.innerText = isPrimeBit(n) ? `${n} è un numero primo ✅` : `${n} non è primo ❌`;
 }
 
