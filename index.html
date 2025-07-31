@@ -84,6 +84,7 @@
       <button onclick="calculateGap()">Gap dₙ</button>
       <button onclick="findTwins()">Primi gemelli</button>
       <button onclick="findDoubleTwins()">Doppi gemelli</button>
+      <button onclick="primeIndex()">Posizione nella sequenza</button>
       <button onclick="factorize()">Scomposizione</button>
       <!-- ...dentro la div .menu... -->
 <button onclick="showBinaryPrimes()">Primi binari</button>
@@ -225,6 +226,28 @@ function findDoubleTwins() {
   }
   r.innerText = `Doppi gemelli (p, p+4) tra ${da} e ${a}:\n` + (doubles.length ? doubles.join(", ") : "Nessuna coppia trovata.");
 }
+function primeIndex() {
+  const val = document.getElementById("inputNumber").value.trim();
+  const n = Number(val);
+  const r = document.getElementById("result");
+  if (!/^\d+$/.test(val) || !Number.isFinite(n) || n < 2 || n > Number.MAX_SAFE_INTEGER)
+    return r.innerText = "Inserisci un numero intero valido (≤ 9007199254740991).";
+  if (!isPrimeBit(n)) return r.innerText = `${n} non è un numero primo secondo la formula.`;
+
+  // Conta i "primi" fino a n
+  let count = 0;
+  // Conta i piccoli primi se sono <= n
+  for (let p of smallPrimes) {
+    if (p < n) count++;
+    if (p === n) return r.innerText = `${n} è il primo numero primo n=${count + 1} nella sequenza.`;
+  }
+  // Conta i "primi" secondo isPrimeBit da 8 a n
+  for (let i = 8; i <= n; i++) {
+    if (isPrimeBit(i)) count++;
+    if (i === n) return r.innerText = `${n} è il numero primo n=${count + smallPrimes.filter(p => p < 8).length} nella sequenza.`;
+  }
+}
+
 
 function factorize() {
   let n = parseInt(document.getElementById("inputNumber").value);
