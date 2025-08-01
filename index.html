@@ -89,6 +89,7 @@
       <button onclick="showBinaryPrimes()">Binary Primes</button>
       <button onclick="generatePrimes()">Generate Interval</button>
       <button onclick="drawInteractiveSpiral3D()">Interactive 3D Spiral</button>
+      <button onclick="explorePrimeGaps()">Explore Gaps dₙ</button>
       <div style="margin: 20px 0 10px 0; text-align:center;">
         <input type="number" id="spiral3DFrom" placeholder="3D From (≥2)" min="2" value="2">
         <input type="number" id="spiral3DTo" placeholder="3D To (≤10000)" min="2" value="100">
@@ -96,6 +97,7 @@
     </div>
     <div class="result" id="result"></div>
     <div id="primeSpiral3D" style="width: 100%; height: 600px; margin-top:30px;"></div>
+    <div id="primeGapChart" style="width: 100%; height: 400px; margin-top:30px;"></div>
   </div>
 
   <script>
@@ -401,6 +403,76 @@ function drawInteractiveSpiral3D() {
 
   Plotly.newPlot('primeSpiral3D', [traceSpiral, traceGap], layout, {responsive: true});
 }
-  </script>
+
+// Nuova funzione: Prime Gap Explorer
+function explorePrimeGaps() {
+  const da = BigInt(prompt("From (inclusive):", "2"));
+  const a = BigInt(prompt("To (inclusive):", "500"));
+  const r = document.getElementById("result");
+  if (isNaN(Number(da)) || isNaN(Number(a)) || da > a) {
+    r.innerText = "Invalid interval.";
+    return;
+  }
+  if (a - da > 10000n) {
+    r.innerText = "Interval too large (max 10,000 numbers).";
+    return;
+  }
+  // Trova tutti i primi nell'intervallo
+  const primes = [];
+  for (let n = da; n <= a; n++) {
+    if (isPrimeSecure(n)) primes.push(n);
+  }
+  if (primes.length < 2) {
+    r.innerText = "Not enough primes in this interval.";
+    Plotly.purge('primeGapChart');
+    return;
+  }
+  // Calcola i gap
+  const gaps = [];
+  for (let i = 1; i < primes.length; i++) {
+    gaps.push(Number(primes[i] - primes[i - 1]));
+  }
+  // Statistiche
+  const minGap = Math.min(...gaps);
+  const maxGap = Math.max(...gaps);
+  // Frequenza dei gap
+  const freq = {};
+  for (let g of gaps) freq[g] = (freq[g] || 0) + 1;
+  const mostFreqGap = Object.entries(freq).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+  // Output testuale
+  r.innerText =
+    `Gaps between ${da} and ${a}:\n` +
+    `Min gap = ${minGap}\n` +
+    `Max gap = ${maxGap}\n` +
+    `Most frequent gap = ${mostFreqGap}\n` +
+    `Gap sequence: ${gaps.slice(0, 30).join(", ")}${gaps.length > 30 ? ", ..." : ""}`;
+
+  // Grafico interattivo
+  const trace = {
+    x: primes.slice(1).map(n => n.toString()),
+    y: gaps,
+    mode: 'lines+markers',
+    type: 'scatter',
+    name: 'Prime Gaps',
+    line: { color: 'orange', width: 2 },
+    marker: { size: 6, color: 'orange' }
+  };
+  const hist = {
+    x: gaps,
+    type: 'histogram',
+    name: 'Gap Frequency',
+    marker: { color: 'rgba(0,216,255,0.5)' },
+    opacity: 0.7,
+    xbins: { size: 1 }
+  };
+  const layout = {
+    title: `Prime Gaps dₙ between ${da} and ${a}`,
+    xaxis: { title: 'Prime (n)', showgrid: true },
+    yaxis: { title: 'Gap dₙ', showgrid: true },
+    bargap: 0.05
+  };
+  Plotly.newPlot('primeGapChart', [trace, hist], layout, {responsive: true});
+}
+ </script>
 </body>
 </html>
