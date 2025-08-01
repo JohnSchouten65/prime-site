@@ -140,13 +140,19 @@ function checkPrime() {
   r.innerText = isPrimeBit(n) ? `${n} è un numero primo ✅` : `${n} non è primo ❌`;
 }
 
-function calculateGap() {
-  const n = parseInt(document.getElementById("inputNumber").value);
+ffunction calculateGap() {
+  const val = document.getElementById("inputNumber").value.trim();
+  const k = Number(val);
   const r = document.getElementById("result");
-  if (!isPrimeBit(n)) return r.innerText = `${n} non è primo`;
-  let next = n + 1;
+  if (!/^\d+$/.test(val) || !Number.isFinite(k) || k < 2 || k > Number.MAX_SAFE_INTEGER)
+    return r.innerText = "Inserisci un numero intero valido (≤ 9007199254740991).";
+
+  // Gap predittivo: trova subito il prossimo "primo"
+  let next = k + 1;
   while (!isPrimeBit(next)) next++;
-  r.innerText = `Gap dₙ dopo ${n}: ${next - n}`;
+  const gap = next - k;
+
+  r.innerText = `Gap dₙ immediato dopo ${k}: dₙ = ${gap}\nProssimo primo: next_prime(${k}) = ${next}`;
 }
 
 function showBinaryPrimes() {
