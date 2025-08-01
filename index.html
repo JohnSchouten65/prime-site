@@ -130,6 +130,10 @@ function checkPrime() {
   const r = document.getElementById("result");
   if (!/^\d+$/.test(val) || !Number.isFinite(n) || n < 2 || n > Number.MAX_SAFE_INTEGER)
     return r.innerText = "Please enter a valid integer (≤ 9007199254740991).";
+  if (smallPrimes.includes(n)) {
+    r.innerText = `${n} is a prime number (by engine) ✅`;
+    return;
+  }
   r.innerText = isPrimeBit(n) ? `${n} is a prime number (by engine) ✅` : `${n} is not prime (by engine) ❌`;
 }
 
@@ -140,7 +144,7 @@ function calculateGap() {
   if (!/^\d+$/.test(val) || !Number.isFinite(k) || k < 2 || k > Number.MAX_SAFE_INTEGER)
     return r.innerText = "Please enter a valid integer (≤ 9007199254740991).";
   let next = k + 1;
-  while (!isPrimeBit(next)) next++;
+  while (!smallPrimes.includes(next) && !isPrimeBit(next)) next++;
   const gap = next - k;
   r.innerText = `Immediate gap dₙ after ${k}: dₙ = ${gap}\nNext prime: next_prime(${k}) = ${next}`;
 }
@@ -152,7 +156,7 @@ function nextPrime() {
   if (!/^\d+$/.test(val) || !Number.isFinite(n) || n < 1 || n > Number.MAX_SAFE_INTEGER)
     return r.innerText = "Please enter a valid integer (≤ 9007199254740991).";
   let next = n + 1;
-  while (!isPrimeBit(next)) next++;
+  while (!smallPrimes.includes(next) && !isPrimeBit(next)) next++;
   r.innerText = `next_prime(${n}) = ${next}\nThe next "prime" after ${n} (by engine) is ${next}.`;
 }
 
@@ -184,10 +188,10 @@ function compositeIndex() {
   const r = document.getElementById("result");
   if (!/^\d+$/.test(val) || !Number.isFinite(n) || n < 4 || n > Number.MAX_SAFE_INTEGER)
     return r.innerText = "Please enter a valid composite number (≥ 4).";
-  if (isPrimeBit(n)) return r.innerText = `${n} is a prime number (by engine), not composite.`;
+  if (smallPrimes.includes(n) || isPrimeBit(n)) return r.innerText = `${n} is a prime number (by engine), not composite.`;
   let count = 0;
   for (let i = 4; i <= n; i++) {
-    if (!isPrimeBit(i)) count++;
+    if (!smallPrimes.includes(i) && !isPrimeBit(i)) count++;
   }
   r.innerText = `${n} is the composite number c=${count} in the engine sequence of composites.`;
 }
@@ -219,16 +223,16 @@ function findTwins() {
   if (isNaN(da) || isNaN(a) || da > a) return r.innerText = "Invalid interval.";
   if (a - da > 10000) return r.innerText = "Interval too large (max 10,000 numbers).";
   const twins = [];
-  for (let i = 0; i < smallPrimes.length - 1; i++) {
-    const p1 = smallPrimes[i], p2 = smallPrimes[i + 1];
-    if (p1 >= da && p2 <= a && p2 - p1 === 2) twins.push(`(${p1}, ${p2})`);
+  let allPrimes = [];
+  for (let p of smallPrimes) {
+    if (p >= da && p <= a) allPrimes.push(p);
   }
-  let last = null;
   for (let n = Math.max(da, Math.max(...smallPrimes) + 1); n <= a; n++) {
-    if (isPrimeBit(n)) {
-      if (last !== null && n - last === 2) twins.push(`(${last}, ${n})`);
-      last = n;
-    }
+    if (isPrimeBit(n)) allPrimes.push(n);
+  }
+  allPrimes.sort((a, b) => a - b);
+  for (let i = 0; i < allPrimes.length - 1; i++) {
+    if (allPrimes[i + 1] - allPrimes[i] === 2) twins.push(`(${allPrimes[i]}, ${allPrimes[i + 1]})`);
   }
   r.innerText = `Twin primes (by engine) between ${da} and ${a}:\n` + (twins.length ? twins.join(", ") : "No pairs found.");
 }
@@ -312,7 +316,10 @@ function drawInteractiveSpiral3D() {
   const from = parseInt(document.getElementById("spiral3DFrom").value) || 2;
   const to = parseInt(document.getElementById("spiral3DTo").value) || 100;
   const primes = [];
-  for (let n = from; n <= to; n++) {
+  for (let p of smallPrimes) {
+    if (p >= from && p <= to) primes.push(p);
+  }
+  for (let n = Math.max(from, Math.max(...smallPrimes) + 1); n <= to; n++) {
     if (isPrimeBit(n)) primes.push(n);
   }
 
