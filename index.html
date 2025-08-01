@@ -316,14 +316,12 @@ function drawInteractiveSpiral3D() {
     if (isPrimeBit(n)) primes.push(n);
   }
 
-  // Spiral coordinates
   const theta = primes.map((p, i) => i * 0.4);
-  const r = primes.map(p => p * 80); // scale for visibility
+  const r = primes.map(p => p * 80);
   const x = r.map((ri, i) => ri * Math.cos(theta[i]));
   const y = r.map((ri, i) => ri * Math.sin(theta[i]));
   const z = primes;
 
-  // Optionally, add a "gap spiral" (vertical line)
   const xGap = Array(primes.length).fill(0);
   const yGap = Array(primes.length).fill(0);
   const zGap = primes;
