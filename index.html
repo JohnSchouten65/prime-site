@@ -97,6 +97,10 @@
       <button onclick="drawSpiral2D()">Logarithmic Spiral 2D</button>
       <button onclick="drawInteractiveSpiral3D()">Interactive 3D Spiral</button>
       <button onclick="drawSpiral3D()">3D Spiral</button>
+      <div style="margin: 20px 0 10px 0; text-align:center;">
+  <input type="number" id="spiral3DFrom" placeholder="3D From (≥2)" min="2" value="2">
+  <input type="number" id="spiral3DTo" placeholder="3D To (≤10000)" min="2" value="100">
+</div>
     </div>
     <div class="result" id="result"></div>
     <div style="margin: 30px 0 10px 0; text-align:center;">
@@ -460,11 +464,13 @@ function drawSpiral3D() {
   animate();
 }
 function drawInteractiveSpiral3D() {
-  // Generate data for the prime spiral
+  const from = parseInt(document.getElementById("spiral3DFrom").value) || 2;
+  const to = parseInt(document.getElementById("spiral3DTo").value) || 100;
   const primes = [];
-  for (let n = 2; n < 100; n++) {
+  for (let n = from; n <= to; n++) {
     if (isPrimeBit(n)) primes.push(n);
   }
+  // ...rest of the function remains the same...
 
   // Spiral coordinates
   const theta = primes.map((p, i) => i * 0.4);
