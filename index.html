@@ -73,7 +73,7 @@
   <p style="text-align:center; margin: 18px 0 0 0; font-size:1.15em; color:#00d8ff;">
     Binary Prime Engine computes and visualizes "prime" numbers using modular filters and binary patterns.<br>
     All results are based on your custom engine, not classical primality.<br>
-    Ora supporta numeri enormi grazie a <b>BigInt</b>!
+    Ora supporta numeri enormi grazie a <b>BigInt</b> e verifica deterministica!
   </p>
   <div class="container">
     <input type="text" id="inputNumber" placeholder="Enter a (big) integer">
@@ -108,6 +108,19 @@ const primeRules = {
 };
 const smallPrimes = [2n, 3n, 5n, 7n, 11n, 13n];
 
+// Radice quadrata intera per BigInt
+function bigintSqrt(n) {
+  if (n < 0n) throw 'square root of negative numbers is not supported';
+  if (n < 2n) return n;
+  let x0 = n / 2n, x1 = (x0 + n / x0) / 2n;
+  while (x1 < x0) {
+    x0 = x1;
+    x1 = (x0 + n / x0) / 2n;
+  }
+  return x0;
+}
+
+// Filtro veloce
 function isPrimeBit(n) {
   if (n < 2n) return false;
   if (smallPrimes.includes(n)) return true;
@@ -129,6 +142,18 @@ function isPrimeBit(n) {
   return true;
 }
 
+// Verifica deterministica finale
+function isPrimeSecure(n) {
+  if (n < 2n) return false;
+  if (smallPrimes.includes(n)) return true;
+  if (!isPrimeBit(n)) return false;
+  const limit = bigintSqrt(n);
+  for (let d = 2n; d <= limit; d++) {
+    if (n % d === 0n) return false;
+  }
+  return true;
+}
+
 function checkPrime() {
   const val = document.getElementById("inputNumber").value.trim();
   const r = document.getElementById("result");
@@ -141,11 +166,7 @@ function checkPrime() {
     r.innerText = "Please enter an integer ≥ 2.";
     return;
   }
-  if (smallPrimes.includes(n)) {
-    r.innerText = `${n} is a prime number (by engine) ✅`;
-    return;
-  }
-  r.innerText = isPrimeBit(n) ? `${n} is a prime number (by engine) ✅` : `${n} is not prime (by engine) ❌`;
+  r.innerText = isPrimeSecure(n) ? `${n} is a prime number ✅` : `${n} is not prime ❌`;
 }
 
 function calculateGap() {
@@ -161,7 +182,7 @@ function calculateGap() {
     return;
   }
   let next = k + 1n;
-  while (!smallPrimes.includes(next) && !isPrimeBit(next)) next++;
+  while (!isPrimeSecure(next)) next++;
   const gap = next - k;
   r.innerText = `Immediate gap dₙ after ${k}: dₙ = ${gap}\nNext prime: next_prime(${k}) = ${next}`;
 }
@@ -179,8 +200,8 @@ function nextPrime() {
     return;
   }
   let next = n + 1n;
-  while (!smallPrimes.includes(next) && !isPrimeBit(next)) next++;
-  r.innerText = `next_prime(${n}) = ${next}\nThe next "prime" after ${n} (by engine) is ${next}.`;
+  while (!isPrimeSecure(next)) next++;
+  r.innerText = `next_prime(${n}) = ${next}\nThe next prime after ${n} is ${next}.`;
 }
 
 function primeIndex() {
@@ -195,20 +216,12 @@ function primeIndex() {
     r.innerText = "Please enter an integer ≥ 2.";
     return;
   }
-  for (let i = 0; i < smallPrimes.length; i++) {
-    if (n === smallPrimes[i]) {
-      return r.innerText = `n = π(${n}) = ${i + 1}\n${n} is the prime number n=${i + 1} in the engine sequence.`;
-    }
-  }
-  if (!isPrimeBit(n)) return r.innerText = `${n} is not a prime number according to the engine.`;
+  if (!isPrimeSecure(n)) return r.innerText = `${n} is not a prime number.`;
   let count = 0n;
-  for (let p of smallPrimes) {
-    if (p < n) count++;
+  for (let i = 2n; i < n; i++) {
+    if (isPrimeSecure(i)) count++;
   }
-  for (let i = BigInt(Math.max(...smallPrimes.map(Number))) + 1n; i < n; i++) {
-    if (isPrimeBit(i)) count++;
-  }
-  r.innerText = `n = π(${n}) = ${count + 1n}\n${n} is the prime number n=${count + 1n} in the engine sequence.`;
+  r.innerText = `n = π(${n}) = ${count + 1n}\n${n} is the prime number n=${count + 1n} in the sequence.`;
 }
 
 function compositeIndex() {
@@ -223,12 +236,12 @@ function compositeIndex() {
     r.innerText = "Please enter a valid composite number (≥ 4).";
     return;
   }
-  if (smallPrimes.includes(n) || isPrimeBit(n)) return r.innerText = `${n} is a prime number (by engine), not composite.`;
+  if (isPrimeSecure(n)) return r.innerText = `${n} is a prime number, not composite.`;
   let count = 0n;
   for (let i = 4n; i <= n; i++) {
-    if (!smallPrimes.includes(i) && !isPrimeBit(i)) count++;
+    if (!isPrimeSecure(i)) count++;
   }
-  r.innerText = `${n} is the composite number c=${count} in the engine sequence of composites.`;
+  r.innerText = `${n} is the composite number c=${count} in the sequence of composites.`;
 }
 
 function factorize() {
@@ -263,18 +276,16 @@ function findTwins() {
   if (isNaN(Number(da)) || isNaN(Number(a)) || da > a) return r.innerText = "Invalid interval.";
   if (a - da > 10000n) return r.innerText = "Interval too large (max 10,000 numbers).";
   const twins = [];
-  let allPrimes = [];
-  for (let p of smallPrimes) {
-    if (p >= da && p <= a) allPrimes.push(p);
+  let lastPrime = null;
+  for (let n = da; n <= a; n++) {
+    if (isPrimeSecure(n)) {
+      if (lastPrime !== null && n - lastPrime === 2n) {
+        twins.push(`(${lastPrime}, ${n})`);
+      }
+      lastPrime = n;
+    }
   }
-  for (let n = BigInt(Math.max(...smallPrimes.map(Number))) + 1n; n <= a; n++) {
-    if (isPrimeBit(n)) allPrimes.push(n);
-  }
-  allPrimes.sort((a, b) => (a < b ? -1 : 1));
-  for (let i = 0; i < allPrimes.length - 1; i++) {
-    if (allPrimes[i + 1] - allPrimes[i] === 2n) twins.push(`(${allPrimes[i]}, ${allPrimes[i + 1]})`);
-  }
-  r.innerText = `Twin primes (by engine) between ${da} and ${a}:\n` + (twins.length ? twins.join(", ") : "No pairs found.");
+  r.innerText = `Twin primes between ${da} and ${a}:\n` + (twins.length ? twins.join(", ") : "No pairs found.");
 }
 
 function findDoubleTwins() {
@@ -284,13 +295,9 @@ function findDoubleTwins() {
   if (isNaN(Number(da)) || isNaN(Number(a)) || da > a) return r.innerText = "Invalid interval.";
   if (a - da > 10000n) return r.innerText = "Interval too large (max 10,000 numbers).";
   const primes = [];
-  for (let p of smallPrimes) {
-    if (p >= da && p <= a) primes.push(p);
+  for (let n = da; n <= a; n++) {
+    if (isPrimeSecure(n)) primes.push(n);
   }
-  for (let n = BigInt(Math.max(...smallPrimes.map(Number))) + 1n; n <= a; n++) {
-    if (isPrimeBit(n)) primes.push(n);
-  }
-  primes.sort((a, b) => (a < b ? -1 : 1));
   const groups = [];
   for (let i = 0; i < primes.length - 1; i++) {
     if (primes[i + 1] - primes[i] === 4n) {
@@ -301,7 +308,7 @@ function findDoubleTwins() {
       }
     }
   }
-  r.innerText = `Double twin groups (distance 4, by engine) between ${da} and ${a}:\n` +
+  r.innerText = `Double twin groups (distance 4) between ${da} and ${a}:\n` +
     (groups.length ? groups.join(", ") : "No group found.");
 }
 
@@ -318,16 +325,9 @@ function showBinaryPrimes() {
     return;
   }
   const B = primeRules.binaryPatterns;
-  let out = `Binary primes (by engine) between ${da} and ${a}:\n\n`;
-  for (let p of smallPrimes) {
-    if (p >= da && p <= a) {
-      const binStr = p.toString(2);
-      const patterns = B.filter(b => binStr.includes(b));
-      out += `${p}: ${binStr}   [pattern: ${patterns.join(", ")}]\n`;
-    }
-  }
-  for (let n = BigInt(Math.max(...smallPrimes.map(Number))) + 1n; n <= a; n++) {
-    if (isPrimeBit(n)) {
+  let out = `Binary primes between ${da} and ${a}:\n\n`;
+  for (let n = da; n <= a; n++) {
+    if (isPrimeSecure(n)) {
       const binStr = n.toString(2);
       const patterns = B.filter(b => binStr.includes(b));
       out += `${n}: ${binStr}   [pattern: ${patterns.join(", ")}]\n`;
@@ -343,24 +343,18 @@ function generatePrimes() {
   if (isNaN(Number(da)) || isNaN(Number(a)) || da > a) return r.innerText = "Invalid interval.";
   if (a - da > 10000n) return r.innerText = "Interval too large (max 10,000 numbers).";
   const list = [];
-  for (let p of smallPrimes) {
-    if (p >= da && p <= a) list.push(p);
+  for (let n = da; n <= a; n++) {
+    if (isPrimeSecure(n)) list.push(n);
   }
-  for (let i = BigInt(Math.max(...smallPrimes.map(Number))) + 1n; i <= a; i++) {
-    if (isPrimeBit(i)) list.push(i);
-  }
-  r.innerText = `Primes (by engine) between ${da} and ${a}:\n` + list.join(", ");
+  r.innerText = `Primes between ${da} and ${a}:\n` + list.join(", ");
 }
 
 function drawInteractiveSpiral3D() {
   const from = parseInt(document.getElementById("spiral3DFrom").value) || 2;
   const to = parseInt(document.getElementById("spiral3DTo").value) || 100;
   const primes = [];
-  for (let p of smallPrimes) {
-    if (p >= BigInt(from) && p <= BigInt(to)) primes.push(Number(p));
-  }
-  for (let n = BigInt(Math.max(...smallPrimes.map(Number))) + 1n; n <= BigInt(to); n++) {
-    if (isPrimeBit(n)) primes.push(Number(n));
+  for (let n = BigInt(from); n <= BigInt(to); n++) {
+    if (isPrimeSecure(n)) primes.push(Number(n));
   }
 
   const theta = primes.map((p, i) => i * 0.4);
@@ -396,7 +390,7 @@ function drawInteractiveSpiral3D() {
   };
 
   const layout = {
-    title: '3D Comparison: Prime Spiral & Gap Spiral (by engine)',
+    title: '3D Comparison: Prime Spiral & Gap Spiral',
     scene: {
       xaxis: { title: '', showgrid: true },
       yaxis: { title: '', showgrid: true },
