@@ -71,8 +71,8 @@
 <body>
   <header>Binary Prime Engine</header>
   <p style="text-align:center; margin: 18px 0 0 0; font-size:1.15em; color:#00d8ff;">
-    Binary Prime Engine computes and visualizes "prime" numbers using advanced modular filters and binary patterns.<br>
-    All results are based on the custom engine, which now uses an enhanced set of rules for maximum accuracy without classical primality tests.
+    Binary Prime Engine computes and visualizes "prime" numbers using modular filters and binary patterns.<br>
+    All results are based on your custom engine, not classical primality.
   </p>
   <div class="container">
     <input type="number" id="inputNumber" placeholder="Enter a number">
@@ -99,25 +99,19 @@
 
   <script>
 const primeRules = {
-  // Enhanced primorial and divisors for better selectivity
-  primorial: 30030, // 2*3*5*7*11*13
-  moduloDivisors: [2, 3, 5, 7, 11, 13],
-  binaryPatterns: [
-    '10', '11', '100', '101', '111', '1001', '1101', '1111', '1011'
-  ]
+  primorial: 210, // 2*3*5*7
+  moduloDivisors: [2, 3, 5, 7],
+  binaryPatterns: ['10', '11', '100', '101', '111']
 };
-const smallPrimes = [2, 3, 5, 7, 11, 13];
+const smallPrimes = [2, 3, 5, 7];
 
-// Enhanced custom prime engine
 function isPrimeBit(n) {
   if (n < 2) return false;
-  // Enhanced modular filter
   const Pk = primeRules.primorial;
   const r = n % Pk;
   for (let d of primeRules.moduloDivisors) {
     if (r % d === 0) return false;
   }
-  // Enhanced binary pattern filter
   const binStr = n.toString(2);
   let binOk = false;
   for (let b of primeRules.binaryPatterns) {
@@ -127,10 +121,6 @@ function isPrimeBit(n) {
     }
   }
   if (!binOk) return false;
-  // Additional: filter out obvious squares (except 4)
-  if (n > 4 && Number.isInteger(Math.sqrt(n))) return false;
-  // Additional: filter out numbers ending with 5 (except 5)
-  if (n > 5 && n % 10 === 5) return false;
   return true;
 }
 
