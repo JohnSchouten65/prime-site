@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <title>Binary Prime Engine</title>
   <style>
     body {
@@ -94,6 +95,7 @@
       <button onclick="showBinaryPrimes()">Binary Primes</button>
       <button onclick="generatePrimes()">Generate Interval</button>
       <button onclick="drawSpiral2D()">Logarithmic Spiral 2D</button>
+      <button onclick="drawInteractiveSpiral3D()">Interactive 3D Spiral</button>
       <button onclick="drawSpiral3D()">3D Spiral</button>
     </div>
     <div class="result" id="result"></div>
@@ -103,6 +105,7 @@
     </div>
     <canvas id="spiralCanvas" width="1200" height="1200"></canvas>
     <div id="spiral3dContainer" style="width:100%; height:500px; margin-top:30px;"></div>
+    <div id="primeSpiral3D" style="width: 100%; height: 600px;"></div>
   </div>
 
   <script>
@@ -455,6 +458,59 @@ function drawSpiral3D() {
     renderer.render(scene, camera);
   };
   animate();
+}
+function drawInteractiveSpiral3D() {
+  // Generate data for the prime spiral
+  const primes = [];
+  for (let n = 2; n < 100; n++) {
+    if (isPrimeBit(n)) primes.push(n);
+  }
+
+  // Spiral coordinates
+  const theta = primes.map((p, i) => i * 0.4);
+  const r = primes.map(p => p * 80); // scale for visibility
+  const x = r.map((ri, i) => ri * Math.cos(theta[i]));
+  const y = r.map((ri, i) => ri * Math.sin(theta[i]));
+  const z = primes;
+
+  // Optionally, add a "gap spiral" (vertical line)
+  const xGap = Array(primes.length).fill(0);
+  const yGap = Array(primes.length).fill(0);
+  const zGap = primes;
+
+  const traceSpiral = {
+    x: x,
+    y: y,
+    z: z,
+    mode: 'lines+markers',
+    type: 'scatter3d',
+    name: 'Prime Spiral',
+    line: { color: 'blue', width: 3 },
+    marker: { size: 4, color: 'blue' }
+  };
+
+  const traceGap = {
+    x: xGap,
+    y: yGap,
+    z: zGap,
+    mode: 'markers+lines',
+    type: 'scatter3d',
+    name: 'Gap Spiral',
+    marker: { size: 4, color: 'purple' },
+    line: { color: 'purple', width: 3 }
+  };
+
+  const layout = {
+    title: '3D Comparison: Prime Spiral & Gap Spiral',
+    scene: {
+      xaxis: { title: '', showgrid: true },
+      yaxis: { title: '', showgrid: true },
+      zaxis: { title: '', showgrid: true }
+    },
+    legend: { x: 0.8, y: 0.9 }
+  };
+
+  Plotly.newPlot('primeSpiral3D', [traceSpiral, traceGap], layout, {responsive: true});
 }
   </script>
 </body>
