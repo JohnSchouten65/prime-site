@@ -87,6 +87,7 @@ Puoi verificare, esplorare e rappresentare graficamente la sequenza generata dal
     <div class="menu">
       <button onclick="checkPrime()">Verifica se primo</button>
       <button onclick="calculateGap()">Gap dₙ</button>
+      <button onclick="nextPrime()">Prossimo primo</button>
       <button onclick="findTwins()">Primi gemelli</button>
       <button onclick="findDoubleTwins()">Doppi gemelli</button>
       <button onclick="primeIndex()">Posizione nella sequenza</button>
@@ -159,6 +160,20 @@ function calculateGap() {
 
   r.innerText = `Gap dₙ immediato dopo ${k}: dₙ = ${gap}\nProssimo primo: next_prime(${k}) = ${next}`;
 }
+
+function nextPrime() {
+  const val = document.getElementById("inputNumber").value.trim();
+  const n = Number(val);
+  const r = document.getElementById("result");
+  if (!/^\d+$/.test(val) || !Number.isFinite(n) || n < 1 || n > Number.MAX_SAFE_INTEGER)
+    return r.innerText = "Inserisci un numero intero valido (≤ 9007199254740991).";
+
+  let next = n + 1;
+  while (!isPrimeBit(next)) next++;
+  r.innerText = `next_prime(${n}) = ${next}\nIl prossimo "primo" dopo ${n} è ${next}.`;
+}
+
+
 
 function showBinaryPrimes() {
   const da = parseInt(prompt("Da (incluso):", "2"));
